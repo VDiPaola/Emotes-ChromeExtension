@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Emote Options</title>
+    <link rel="stylesheet" href="./css/options.css">
+</head>
+<body>
+<div id="container">
+    <div id="section1">
+        <h1 id="optionsTitle">Options</h1>
+        <div>
+            <span title="blacklist means all sites are enabled and you can blacklist sites, whitelist means all sites are disabled and you can whitelist specific ones (recommended)" class="padding">extension visibility mode</span>
+            <select name="blacklistMode" id="blacklistMode">
+                <option value="blacklist">Blacklist</option>
+                <option value="whitelist">Whitelist</option>
+            </select>
+        </div>
+        <div id="emoteCheckboxContainer">
+            <span title="if enabled it only changes emotes if it is the full name e.g. if you had PeepoHappy but not WidePeepoHappy then if this is disabled it will change part of WidePeepoHappy to the PeepoHappy emote" class="padding">full emote name only</span>
+            <input type="checkbox" id="emoteCheckbox"/>
+        </div>
+        
+    </div>
+
+
+    <div id="section2">
+        <h1>View</h1>
+        <select name="contentItem" id="contentItem">
+            <option disabled selected hidden value="_">Select An Option</option>
+            <option value="blacklist">Blacklist</option>
+            <option value="whitelist">Whitelist</option>
+            <option value="bttv">Your BTTV Emotes</option>
+            <option value="ffz">Your FFZ Emotes</option>
+            <option value="twitch">Your Twitch Emotes</option>
+            <option value="bttvFrame">Add BTTV Emotes From Site</option>
+            <option value="ffzFrame">Add FFZ Emotes From Site</option>
+            <option value="channelEmotes">Add Emotes From A Channel</option>
+        </select>
+        <div id="content"></div>
+    </div>
+    
+</div>
+<script src="./js/options.js"></script>
+</body>
+</html>

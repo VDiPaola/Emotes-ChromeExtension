@@ -1,0 +1,150 @@
+
+#optionsTitle{
+    padding-bottom: 2%;
+}
+#container{
+    width:100vw;
+    height:100vh;
+    position: relative;
+    background: rgba(129, 129, 129, 0.678);
+}
+#section1, #section2{
+    width:50vw;
+    height:100vh;
+    top:0;
+    position: absolute;
+    text-align: center;
+}
+#section1{
+    left:0;
+    
+}
+#section2{
+    right:0;
+    border-left: 1px solid white;
+}
+#section2 > select{
+    width: 90%;
+    text-align-last: center;
+    text-align: center;
+    margin-bottom: 2%;
+    
+}
+#contentItem{
+    padding: 1% 0.5%;
+}
+.list li{
+    background-color: rgb(255, 255, 255);
+    position: relative;
+    height: 50px;
+}
+.list li:nth-child(odd){
+    background-color: rgb(219, 219, 219);
+}
+.list li > span{
+    padding-top: 1%;
+    display: block;
+    font-size: 20px;
+    min-width: 100%;
+    color:black;
+}
+.list li span > button{
+    width: 10%;
+    height: 30px;
+    left: 87%;
+    position: absolute;
+    font-size: 1vw;
+}
+.emotesContainer{
+    display: block;
+    position: relative;
+    float:left;
+    width: 10%;
+    margin:1%;
+    height:30px;
+}
+.emotesContainer:hover{
+    cursor:url('../remove.png') 8 8,auto;
+}
+#emoteCheckboxContainer{
+    width:80%;
+    margin-top:2%;
+}
+
+
+
+
+/* generics */
+*{
+    margin:0;
+    padding:0;
+}
+body{
+    font-size: 1vw;
+    overflow-x: hidden;
+    background-color: #444444;
+    background-image: url(https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/5e/5ee8600ce810ebf5f85834c2cf0c013d45094fcd_full.jpg);
+    background-repeat: repeat;
+    background-size: 30px;
+    color: white;
+}
+select{
+    padding: 1px 4px;
+    width:20%;
+    font-size: 1vw;
+}
+iframe{
+    width: 90%;
+    position: absolute;
+    height: 82%;
+    border: none;
+    left: 5%;
+}
+.list{
+    height: 80%;
+    width: 95%;
+    overflow-y: scroll;
+    position: absolute;
+    left: 2.5%;
+    list-style-type: none;
+}
+.removeButton {
+    transition: all 0.2s;
+    background: #E52020;
+    background-image: -webkit-linear-gradient(top, #E52020, #990E0E);
+    background-image: -moz-linear-gradient(top, #E52020, #990E0E);
+    background-image: -ms-linear-gradient(top, #E52020, #990E0E);
+    background-image: -o-linear-gradient(top, #E52020, #990E0E);
+    background-image: linear-gradient(to bottom, #E52020, #990E0E);
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    border-radius: 0px;
+    color: #FFFFFF;
+    font-family: serif;
+    font-weight: 100;
+    text-shadow: 1px 1px 20px #000000;
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
+    text-align: center;
+    border:none;
+    outline:none;
+    }
+    
+    .removeButton:hover {
+    border: solid #337FED 0px;
+    background: #B10101;
+    color:rgb(216, 216, 216);
+    background-image: -webkit-linear-gradient(top, #B10101, #8B0606);
+    background-image: -moz-linear-gradient(top, #B10101, #8B0606);
+    background-image: -ms-linear-gradient(top, #B10101, #8B0606);
+    background-image: -o-linear-gradient(top, #B10101, #8B0606);
+    background-image: linear-gradient(to bottom, #B10101, #8B0606);
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    border-radius: 20px;
+    text-decoration: none;
+}
+input[type="checkbox"]{
+    transform: scale(1.5);
+}
