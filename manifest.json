@@ -1,36 +1,28 @@
 {
-    "manifest_version": 2,
+    "manifest_version": 3,
     "name": "Emotes Everywhere",
-    "version": "1.0.1",
+    "version": "2.0.0",
     "description": "Twitch, BTTV & FFZ emotes of your choosing on any site",
     "icons":{
         "128": "icon128.png",
         "48": "icon48.png",
         "16": "icon16.png"
     },
-    "browser_action":{
-        "default_icon": "icon16.png",
-        "default_popup": "popup.html"
-    },
+
     "permissions": [
         "storage",
-        "contextMenus",
-        "tabs"
+        "contextMenus"
     ],
 
     "options_page": "options.html",
 
     "background":{
-        "scripts":["./js/contextMenu.js"],
-        "persistent": false
+        "service_worker":"./dist/background.js",
+        "type": "module"
     },
+
     "content_scripts": [{
         "matches":    ["*://*/*"],
-        "js":         ["./js/content.js"],
-        "run_at": "document_idle",
-        "all_frames": false
-    }],
-     "web_accessible_resources": [
-        "./js/popup.js", "./js/content.js"
-        ]
+        "js":         ["./dist/content/main.js"]
+    }]
 }

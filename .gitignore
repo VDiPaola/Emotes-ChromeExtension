@@ -5,3 +5,9 @@ cached-users.url
 ffz.url
 
 Emotes.zip
+
+node_modules/
+
+dist/
+
+package-lock.json
