@@ -2,6 +2,9 @@
 //get all emotes from a channel (bttv/ffz)
 //disable/enable mutation observer for performance
 
+import { getCDN } from "../shared/Helpers";
+import { GlobalSetting } from "../shared/Settings";
+
 //advanced:
 //set specific tags that are queried
 //add custom emote thats not on bttv/ffz
@@ -22,83 +25,43 @@ const contentItem = document.getElementById('contentItem');
 const content = document.getElementById("content");
 const emoteCheckbox = document.getElementById("emoteCheckbox");
 
+GlobalSetting.IS_WHITELIST.Get().then(isWhitelist => {
+    blacklistMode.selectedIndex = isWhitelist ? 1 : 0;
+})
 
-//keys
-const blacklist_key = "blacklistMode";
-const BTTVKey = "bttvEmotes";
-const FFZKey = "ffzEmotes";
-const TwitchKey = "twitchEmotes";
-const fullEmoteMode_Key = "fullEmoteMode";
+GlobalSetting.EMOTE_FULL_NAME.Get().then(isEmoteFullName => {
+    emoteCheckbox.checked = isEmoteFullName
+})
+
 
 //event listeners
-blacklistMode.addEventListener("change", onBlacklistModeChange)
+blacklistMode.addEventListener("change", (e)=>{
+    GlobalSetting.IS_WHITELIST.Set(e.target.value.toLowerCase() == 'whitelist')
+})
 contentItem.addEventListener("change", onContentItemChange)
-emoteCheckbox.addEventListener("change", onEmoteCheckboxChange);
+emoteCheckbox.addEventListener("change", (e)=>{
+    GlobalSetting.EMOTE_FULL_NAME.Set(e.target.checked)
+});
 
-//vars
-let blacklist = false;
-let bttvImage = "https://cdn.betterttv.net/emote/EMOTEID/1x";
-let ffzImage = "https://cdn.frankerfacez.com/emoticon/EMOTEID/1";
-let twitchImage = "https://static-cdn.jtvnw.net/emoticons/v1/EMOTEID/1.0";
-
-
-function init(){
-    //get blacklistmode 
-    GetStorage(blacklist_key, (res)=>{
-        blacklist = false;
-        let value = "whitelist"
-        if(res[blacklist_key]){
-            blacklist = true;
-            value = "blacklist"
-        }
-        document.querySelector('#blacklistMode [value="' + value + '"]').selected = true;
-    })
-    //get fullEmoteMode
-    GetStorage(fullEmoteMode_Key, (res)=>{
-        if(res[fullEmoteMode_Key] === true){
-            emoteCheckbox.checked = true;
-        }
-    })
-}
-init()
-
-
-//event handlers
-function onBlacklistModeChange(event){
-    blacklist = false;
-    if(event.target.value.toLowerCase() == 'blacklist'){
-        blacklist = true;
-    }
-    chrome.storage.sync.set({[blacklist_key]:blacklist})
-}
 function onContentItemChange(event){
     let value = event.target.value;
     content.innerHTML = "";
     switch(value.toLowerCase()){
-        case 'bttvframe':
-            content.innerHTML = "<iframe src='https://betterttv.com/emotes/shared' />"
-            break;
-        case 'ffzframe':
-            content.innerHTML = "<iframe src='https://www.frankerfacez.com/emoticons/wall?q=&sort=count-desc' />"
+        case '7tvframe':
+            content.innerHTML = "<iframe src='https://7tv.app/emotes?page=1' />"
             break;
         case 'blacklist':
-            GetStorage("blacklist", (res)=>{
-                createLists(res["blacklist"], content)
+            GlobalSetting.BLACKLIST.Get().then(blacklist => {
+                createLists(blacklist, content, false)
             })
             break;
         case 'whitelist':
-            GetStorage("whitelist", (res)=>{
-                createLists(res["whitelist"], content)
+            GlobalSetting.WHITELIST.Get().then(whitelist => {
+                createLists(whitelist, content, true)
             })
             break;
-        case 'bttv':
-            loadEmotes(BTTVKey, bttvImage);
-            break;
-        case 'ffz':
-            loadEmotes(FFZKey, ffzImage);
-            break;
-        case 'twitch':
-            loadEmotes(TwitchKey, twitchImage);
+        case 'emotes':
+            loadEmotes();
             break;
         default:
             content.innerHTML = "not available";
@@ -107,35 +70,19 @@ function onContentItemChange(event){
 }
 function removeEmote(event){
     let element = event.target
-    let emoteID = element.getAttribute("emoteID");
     let emoteName = element.getAttribute("emoteName");
-    let key = element.getAttribute("emoteKey");
     
-    //get emotes
-    GetStorage(key, (res)=>{
-        let obj = res[key];
-        if(obj.hasOwnProperty(emoteName)){
-            //delete emote from object
-            delete obj[emoteName];
-        }
-        //set storage
-        chrome.storage.sync.set({
-            [key]: obj
-        })
-        //remove emote element
-        element.parentNode.remove();
+    GlobalSetting.EMOTES.Get().then(emotes => {
+        emotes = emotes.filter(emote => emote.name != emoteName)
+        GlobalSetting.EMOTES.Set(emotes);
     })
-}
-function onEmoteCheckboxChange(event){
-    console.log(event.target.checked)
-    let enabled = event.target.checked;
-    chrome.storage.sync.set({
-        [fullEmoteMode_Key]:enabled
-    })
+
+    event.target.parentNode.remove()
 }
 
-//helper functions
-function createLists(list, element){
+
+// //helper functions
+function createLists(list, element, isWhitelist){
     let ul = document.createElement('ul')
     ul.className = 'list';
     list.forEach(url => {
@@ -160,40 +107,42 @@ function createLists(list, element){
         buttons[i].addEventListener("click",function(event){
             let site = event.target.parentNode.value
             //remove from storage
-            removeSite(site);
+            removeSite(site, isWhitelist);
             //remove from table
             event.target.parentNode.parentNode.remove();
         })
     }
 }
-function removeSite(site){
-    //get site list
-    let key = contentItem.options[contentItem.selectedIndex].value;
-    key = key.toLowerCase();
-    if(key == "blacklist" || key == "whitelist"){
-        GetStorage(key, (res)=>{
-            //check site exists
-            if(res[key].indexOf(site) >= 0){
-                res[key].splice(res[key].indexOf(site),1);
-                //set storage
-                chrome.storage.sync.set({[key]:res[key]})
+function removeSite(site, isWhitelist){
+    if(isWhitelist){
+        GlobalSetting.WHITELIST.Get().then(whitelist => {
+            var index = whitelist.indexOf(site);
+            if (index !== -1) {
+                whitelist.splice(index, 1);
+                GlobalSetting.WHITELIST.Set(whitelist);
+            }
+        })
+    }else{
+        GlobalSetting.BLACKLIST.Get().then(blacklist => {
+            var index = blacklist.indexOf(site);
+            if (index !== -1) {
+                blacklist.splice(index, 1);
+                GlobalSetting.BLACKLIST.Set(blacklist);
             }
         })
     }
 }
-function loadEmotes(key, urlFormat){
-    GetStorage(key, (res)=>{
-        console.log(res)
-        let emotes = res[key];
-        for(let emote in emotes){
-            let url = urlFormat.replace("EMOTEID", emotes[emote])
+
+
+function loadEmotes(){
+    GlobalSetting.EMOTES.Get().then(emotes => {
+        for(let emote of emotes){
+            let url = getCDN(emote);
             let image = document.createElement("img");
             image.src = url;
-            image.setAttribute("emoteID", emotes[emote]);
-            image.setAttribute("emoteName", emote);
-            image.setAttribute("emoteKey", key);
+            image.setAttribute("emoteName", emote.name);
             let newDiv = document.createElement('div')
-            newDiv.title = emote;
+            newDiv.title = emote.name;
             newDiv.className = "emotesContainer";
             newDiv.appendChild(image);
             content.appendChild(newDiv);
@@ -201,11 +150,4 @@ function loadEmotes(key, urlFormat){
             image.addEventListener("click", removeEmote)
         }
     })
-}
-
-
-
-//storage
-function GetStorage(key, callback){
-    chrome.storage.sync.get(key, callback)
 }
